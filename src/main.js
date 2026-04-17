@@ -30,7 +30,7 @@ async function generateIcs() {
   const apiKey = apiKeyEl.value;
   const apiUrl = apiUrlEl.value || apiUrlEl.placeholder;
   const apiModel = apiModelEl.value || apiModelEl.placeholder;
-  
+
   if (!prompt || !apiKey) {
     statusMsgEl.textContent = "Please provide an API key and event description.";
     return;
@@ -40,8 +40,8 @@ async function generateIcs() {
   submitBtn.disabled = true;
 
   try {
-    const systemPrompt = 
-`You are an assistant. Based on the user's input, extract one or more event details.
+    const systemPrompt =
+      `You are an assistant. Based on the user's input, extract one or more event details.
 Output ONLY a JSON array of event objects (without codeblocks or markdown or any other wraps, just JSON). 
 Each object must have:
 - "title" (string)
@@ -59,8 +59,8 @@ Optional keys include:
     const requestBody = {
       model: apiModel,
       messages: [
-        {role: "system", content: systemPrompt + "\nTime now: " + new Date().toISOString()},
-        {role: "user", content: prompt}
+        { role: "system", content: systemPrompt + "\nTime now: " + new Date().toISOString() },
+        { role: "user", content: prompt }
       ],
       stream: false
     };
@@ -138,7 +138,7 @@ Optional keys include:
     } else {
       throw new Error("Unrecognized response format from LLM: " + responseText.substring(0, 200));
     }
-    
+
     // Cleanup code blocks
     if (content.startsWith("```json")) {
       content = content.replace(/^```json\n/, "").replace(/\n```$/, "");
@@ -152,11 +152,11 @@ Optional keys include:
     }
 
     statusMsgEl.textContent = `Generating and opening ${eventData.length} event(s) ICS...`;
-    
-    const filePath = await invoke("generate_ics", { 
+
+    const filePath = await invoke("generate_ics", {
       events: eventData
     });
-    
+
     statusMsgEl.textContent = `Generated ${eventData.length} event(s) ICS at ${filePath}! Requesting Android calendar to open...`;
   } catch (error) {
     statusMsgEl.textContent = `Error: ${error.message || error}`;

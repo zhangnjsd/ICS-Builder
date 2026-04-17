@@ -3,9 +3,7 @@ use chrono_tz::Tz;
 use ics::components::{Parameter, Property};
 use ics::{
     Alarm, Event, ICalendar,
-    properties::{
-        Action, Class, Description, Location, RRule, Summary, Transp, Trigger,
-    },
+    properties::{Action, Class, Description, Location, RRule, Summary, Transp, Trigger},
 };
 use tauri::Manager;
 use tauri_plugin_opener::OpenerExt;
@@ -33,9 +31,7 @@ async fn generate_ics(
     let mut calendar = ICalendar::new("2.0", "ics-builder");
 
     let system_tz_name = iana_time_zone::get_timezone().unwrap_or_else(|_| "UTC".to_string());
-    let system_tz = system_tz_name
-        .parse::<Tz>()
-        .unwrap_or(chrono_tz::UTC);
+    let system_tz = system_tz_name.parse::<Tz>().unwrap_or(chrono_tz::UTC);
 
     // Keep event timestamps as local values in the selected timezone.
     let parse_date = |ds: &str, tz: Tz| -> Result<String, String> {
@@ -121,10 +117,7 @@ async fn generate_ics(
             }
         }
 
-        chosen.ok_or_else(|| {
-            "Failed to access Documents directory. "
-                .to_string()
-        })?
+        chosen.ok_or_else(|| "Failed to access Documents directory. ".to_string())?
     };
 
     let _ = std::fs::create_dir_all(&target_dir);
