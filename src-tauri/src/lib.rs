@@ -37,7 +37,7 @@ async fn generate_ics(
         .parse::<Tz>()
         .unwrap_or(chrono_tz::UTC);
 
-    // Keep event timestamps as local wall-clock values in the selected timezone.
+    // Keep event timestamps as local values in the selected timezone.
     let parse_date = |ds: &str, tz: Tz| -> Result<String, String> {
         if let Ok(dt) = DateTime::parse_from_rfc3339(ds) {
             return Ok(dt.with_timezone(&tz).format("%Y%m%dT%H%M%S").to_string());
@@ -127,14 +127,6 @@ async fn generate_ics(
         })?
     };
 
-    #[cfg(not(target_os = "android"))]
-    let target_dir = app_handle
-        .path()
-        .document_dir()
-        .or_else(|_| app_handle.path().download_dir())
-        .map_err(|_| "Failed to get public dir".to_string())?
-        .join("ICSBuilder");
-
     let _ = std::fs::create_dir_all(&target_dir);
 
     let file_path = target_dir.join(format!("event_{}.ics", Uuid::new_v4()));
@@ -154,15 +146,6 @@ async fn generate_ics(
             "top.shizukuaqua.ics", rel
         )
     };
-
-    #[cfg(not(target_os = "android"))]
-    let file_url = format!(
-        "file://{}",
-        file_path
-            .to_string_lossy()
-            .replace('\\', "/")
-            .replace(" ", "%20")
-    );
 
     app_handle
         .opener()
